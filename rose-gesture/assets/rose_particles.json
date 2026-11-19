@@ -1,0 +1,30 @@
+{
+  "count": 46000,
+  "source": "nine wine red roses, gathered stems, 12 attached leaves, no ribbon",
+  "format": "RGP1: pos3 targets3 colors3 sizes1 delays1 seeds1 alphas1 (float32 LE)",
+  "bbox_home": {
+    "min": [
+      -0.15045621340762083,
+      0.017967531118102554,
+      -0.09486246508822796
+    ],
+    "max": [
+      0.15193062547344033,
+      0.41625313526739705,
+      0.10779860454956705
+    ]
+  },
+  "bbox_scatter": {
+    "min": [
+      -0.36348586893391743,
+      -0.11417159688252282,
+      -0.27666192902120845
+    ],
+    "max": [
+      0.3750333975889133,
+      0.7503334726285654,
+      0.27834047156755404
+    ]
+  },
+  "file": "rose_particles.bin"
+}

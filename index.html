@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0a08" />
+  <title>Face / Signal — 用手改写一张脸</title>
+  <meta name="description" content="一个由手势实时驱动的脸部表情研究。张开手掌，他微笑；捏合手指，他收起笑意。" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%230b0a08'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%23e5b889' stroke-width='1.5'/%3E%3Ccircle cx='32' cy='32' r='3' fill='%23e5b889'/%3E%3C/svg%3E" />
+  <link rel="preload" href="assets/fonts/InstrumentSerif-Regular.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="assets/fonts/InstrumentSerif-Italic.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="assets/fonts/IBMPlexMono-Regular.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="stylesheet" href="styles.css?v=frames-50-3" />
+</head>
+<body>
+  <div class="scene" aria-hidden="true">
+    <div class="scene__grid"></div>
+    <div class="scene__halo"></div>
+    <div class="scene__flare"></div>
+    <div class="scene__grain"></div>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Face Signal 首页">
+      <span class="brand__mark"><i></i></span>
+      <span class="brand__name">FACE / SIGNAL</span>
+      <span class="brand__sub">手势表情研究</span>
+    </a>
+
+    <p class="topbar__title">AN INTERACTIVE PORTRAIT <span>—</span> NO. 001</p>
+
+    <div class="topbar__tools">
+      <div class="status-chip" id="topStatus" data-tone="idle">
+        <span class="status-chip__dot"></span>
+        <span id="topStatusText">等待手势</span>
+      </div>
+      <button class="icon-button" id="fullscreenBtn" type="button" aria-label="进入全屏" title="全屏">
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M7 3H3v4M13 3h4v4M17 13v4h-4M3 13v4h4" fill="none" stroke="currentColor" stroke-width="1.25" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="experience">
+    <aside class="intro-copy">
+      <div class="eyebrow">
+        <span class="eyebrow__index">01</span>
+        <span>THE SUBJECT</span>
+        <span class="eyebrow__line"></span>
+      </div>
+
+      <div class="intro-copy__main">
+        <h1 class="display">
+          <span>A smile,</span>
+          <em>by hand.</em>
+        </h1>
+        <p class="intro-copy__zh">用手的开合，<br />重写一张脸的语言。</p>
+        <p class="intro-copy__note">没有播放键。这里的每一帧，都由你掌心的距离实时生成。</p>
+      </div>
+
+      <div class="intro-copy__foot">
+        <div class="meta-line"><span>MOTION STUDY</span><span>50 FRAMES</span></div>
+        <div class="meta-line"><span>REAL-TIME / LOCAL</span><span>2026</span></div>
+      </div>
+    </aside>
+
+    <section class="stage" id="stage" aria-label="手势控制的男人表情动画">
+      <div class="stage__aura" aria-hidden="true"></div>
+
+      <div class="portrait" id="portrait">
+        <canvas id="portraitCanvas" width="960" height="960" aria-label="画面中的男子，表情会随手掌张开程度实时变化"></canvas>
+        <div class="portrait__frame" aria-hidden="true"></div>
+        <div class="portrait__hud portrait__hud--top">
+          <span class="hud-live"><i></i> <span id="hudMode">PORTRAIT STUDY</span></span>
+          <span id="frameCounter">FRAME 01 / 50</span>
+        </div>
+        <div class="portrait__hud portrait__hud--bottom">
+          <div class="portrait__expression">
+            <span class="portrait__state" id="portraitState">SMILE</span>
+            <span class="portrait__state-cn" id="portraitStateCn">笑意正浓</span>
+          </div>
+          <div class="portrait__open">
+            <span id="portraitPercent">100</span><small>% OPEN</small>
+          </div>
+        </div>
+        <div class="register" aria-hidden="true">
+          <span class="register__tl"></span><span class="register__tr"></span>
+          <span class="register__bl"></span><span class="register__br"></span>
+        </div>
+      </div>
+
+      <div class="stage__footer">
+        <span class="stage__caption">HAND OPENNESS <i>→</i> EXPRESSION TIMELINE</span>
+        <div class="frame-ruler" id="frameRuler" aria-hidden="true"></div>
+        <span class="stage__hint" id="stageHint"><i></i> SHOW YOUR HAND</span>
+      </div>
+    </section>
+
+    <aside class="readout">
+      <div class="eyebrow">
+        <span class="eyebrow__index">02</span>
+        <span>YOUR HAND</span>
+        <span class="eyebrow__line"></span>
+      </div>
+
+      <div class="readout__meter">
+        <div class="readout__value">
+          <span id="opennessValue">100</span><sup>%</sup>
+          <span class="readout__label">OPENNESS</span>
+        </div>
+        <div class="open-scale" aria-hidden="true">
+          <div class="open-scale__track">
+            <span class="open-scale__fill" id="openFill"></span>
+            <span class="open-scale__marker" id="openMarker"></span>
+          </div>
+          <div class="open-scale__labels"><span>PINCHED</span><span>OPEN</span></div>
+        </div>
+        <p class="readout__state"><span>EXPRESSION</span><strong id="expressionText">A SMILE</strong></p>
+      </div>
+
+      <div class="camera-card" id="cameraCard" data-state="off">
+        <div class="camera-card__screen">
+          <video id="webcam" playsinline muted autoplay></video>
+          <canvas id="handCanvas" width="304" height="228" aria-hidden="true"></canvas>
+          <div class="camera-card__idle">
+            <span class="camera-card__reticle"><i></i></span>
+            <span id="cameraIdleText">CAMERA OFFLINE</span>
+          </div>
+          <div class="camera-card__prompt">
+            <span class="camera-card__prompt-hand" aria-hidden="true">
+              <svg viewBox="0 0 256 256">
+                <path d="M188 88a27.75 27.75 0 0 0-12 2.71V60a28 28 0 0 0-41.36-24.6A28 28 0 0 0 80 44v6.71A27.75 27.75 0 0 0 68 48a28 28 0 0 0-28 28v76a88 88 0 0 0 176 0v-36a28 28 0 0 0-28-28m12 64a72 72 0 0 1-144 0V76a12 12 0 0 1 24 0v44a8 8 0 0 0 16 0V44a12 12 0 0 1 24 0v68a8 8 0 0 0 16 0V60a12 12 0 0 1 24 0v68.67A48.08 48.08 0 0 0 120 176a8 8 0 0 0 16 0a32 32 0 0 1 32-32a8 8 0 0 0 8-8v-20a12 12 0 0 1 24 0Z" fill="currentColor" />
+              </svg>
+            </span>
+            <p>先把整只手掌放进画面</p>
+            <small>手掌面向镜头 · 保持约一臂距离<br />锁定后再慢慢捏合</small>
+          </div>
+          <div class="camera-card__corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="camera-card__badge"><i></i><span id="cameraBadge">STANDBY</span></div>
+        </div>
+        <div class="camera-card__meta">
+          <span>MEDIAPIPE HANDS</span>
+          <span id="trackerStats">STANDBY</span>
+        </div>
+        <p class="camera-card__error" id="cameraError" hidden></p>
+        <button class="camera-card__fallback" id="cameraFallbackBtn" type="button" hidden>手部识别不可用？改用鼠标控制 →</button>
+      </div>
+
+      <div class="gesture-guide">
+        <div class="gesture-guide__item">
+          <svg viewBox="0 0 256 256" aria-hidden="true">
+            <path d="M200 80h-16V64a32 32 0 0 0-56-21.13a32 32 0 0 0-55.79 17.55A32 32 0 0 0 24 88v40a104 104 0 0 0 208 0v-16a32 32 0 0 0-32-32m-48-32a16 16 0 0 1 16 16v16h-32V64a16 16 0 0 1 16-16M88 64a16 16 0 0 1 32 0v40a16 16 0 0 1-32 0ZM40 88a16 16 0 0 1 32 0v16a16 16 0 0 1-32 0Zm176 40a88 88 0 0 1-175.92 3.75A31.93 31.93 0 0 0 80 125.13a31.93 31.93 0 0 0 44.58 3.35a32.2 32.2 0 0 0 11.8 11.44A47.88 47.88 0 0 0 120 176a8 8 0 0 0 16 0a32 32 0 0 1 32-32a8 8 0 0 0 0-16h-16a16 16 0 0 1-16-16V96h64a16 16 0 0 1 16 16Z" fill="currentColor" />
+          </svg>
+          <p><b>捏合</b><span>表情变严肃</span></p>
+          <span class="gesture-guide__key">0%</span>
+        </div>
+        <div class="gesture-guide__item">
+          <svg viewBox="0 0 256 256" aria-hidden="true">
+            <path d="M188 88a27.75 27.75 0 0 0-12 2.71V60a28 28 0 0 0-41.36-24.6A28 28 0 0 0 80 44v6.71A27.75 27.75 0 0 0 68 48a28 28 0 0 0-28 28v76a88 88 0 0 0 176 0v-36a28 28 0 0 0-28-28m12 64a72 72 0 0 1-144 0V76a12 12 0 0 1 24 0v44a8 8 0 0 0 16 0V44a12 12 0 0 1 24 0v68a8 8 0 0 0 16 0V60a12 12 0 0 1 24 0v68.67A48.08 48.08 0 0 0 120 176a8 8 0 0 0 16 0a32 32 0 0 1 32-32a8 8 0 0 0 8-8v-20a12 12 0 0 1 24 0Z" fill="currentColor" />
+          </svg>
+          <p><b>张开</b><span>笑意回来</span></p>
+          <span class="gesture-guide__key">100%</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <p class="footer__privacy"><i></i> LOCAL VISION / 影像不上传、不录制</p>
+    <p class="footer__instruction" id="footerInstruction">张开手掌，让他微笑。</p>
+    <button class="text-button" id="pointerModeBtn" type="button">用鼠标体验 <span>↗</span></button>
+  </footer>
+
+  <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <div class="gate__top">
+      <span>FACE / SIGNAL</span>
+      <span>INPUT REQUIRED — CAMERA 01</span>
+    </div>
+
+    <div class="gate__content">
+      <p class="gate__kicker"><i></i> A STUDY IN MICRO-EXPRESSIONS</p>
+      <h2 id="gateTitle">Let the hand<br /><em>speak.</em></h2>
+      <p class="gate__zh">用掌心的开合，<br />让一张脸慢慢回应。</p>
+      <p class="gate__desc">这不是播放。50 帧表情被拆解在手掌的距离里，<br />等你用动作逐帧写出。识别在你的设备本地完成。</p>
+
+      <div class="gate__actions">
+        <button class="button button--primary" id="startBtn" type="button">
+          <span class="button__idle">开启手势体验</span>
+          <span class="button__loading"><i class="spinner"></i> 正在接住你的手…</span>
+          <span class="button__arrow">↗</span>
+        </button>
+        <button class="button button--quiet" id="skipBtn" type="button">先用鼠标体验</button>
+      </div>
+      <p class="gate__message" id="gateMessage" role="status"></p>
+      <p class="gate__privacy"><span>●</span> 本地处理 · 不上传 · 不录制</p>
+      <p class="gate__engine"><span>ENGINE</span> MEDIAPIPE HAND LANDMARKER · CPU / WASM</p>
+      <p class="gate__webgl-warning" id="webglWarning" hidden>当前浏览器没有可用的 WebGL，MediaPipe 无法读取摄像头画面。请开启浏览器图形加速，或改用 Safari。</p>
+    </div>
+
+    <div class="gate__diagram" aria-hidden="true">
+      <div class="diagram">
+        <div class="diagram__half">
+          <div class="diagram__figure">
+            <span class="diagram__orbit"></span>
+            <svg class="diagram__hand" data-hand-pose="closed" viewBox="0 0 160 160" aria-hidden="true"></svg>
+          </div>
+          <p><span>01 / PINCH</span>捏合手指，收起笑意</p>
+        </div>
+        <div class="diagram__arrow">→</div>
+        <div class="diagram__half diagram__half--open">
+          <div class="diagram__figure">
+            <span class="diagram__orbit"></span>
+            <svg class="diagram__hand" data-hand-pose="open" viewBox="0 0 160 160" aria-hidden="true"></svg>
+          </div>
+          <p><span>02 / OPEN</span>张开手掌，让笑意回来</p>
+        </div>
+      </div>
+      <p class="diagram__note">你的手掌，是这组表情唯一的播放头。</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="app.js?v=frames-50-3"></script>
+</body>
+</html>

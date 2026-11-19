@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#050506" />
+  <title>Wine Red Roses — Gesture Hologram</title>
+  <meta name="description" content="九朵酒红玫瑰，张开手掌化为粒子，握拳重新聚拢。摄像头本地手势识别。" />
+  <link rel="preload" href="../assets/fonts/InstrumentSerif-Regular.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="../assets/fonts/InstrumentSerif-Italic.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="../assets/fonts/IBMPlexMono-Regular.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="stage" id="stageWrap">
+    <canvas id="stage" aria-label="九朵酒红玫瑰的全息粒子交互，张开手掌消散，握拳聚合"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="topbar ui">
+      <div class="brand"><span class="brand__mark"></span><span>ROSE / SIGNAL</span></div>
+      <div class="topbar__meta"><span>GESTURE / DISSOLVE</span><span>STUDY 01 / 2026</span></div>
+    </header>
+
+    <section class="title ui">
+      <p class="eyebrow">NINE WINE RED ROSES · LIVE GESTURE</p>
+      <h1>Wine red roses,<br /><em>after dark.</em></h1>
+      <p class="title__zh">九朵酒红玫瑰，没有包装，只有夜色、柔光与金色微尘。</p>
+    </section>
+
+    <aside class="meta ui">
+      <div><span>ROSES</span><b>9</b></div>
+      <div><span>TRIANGLES</span><b>315,036</b></div>
+      <div><span>PARTICLES</span><b>46,000</b></div>
+    </aside>
+
+    <nav class="controls ui" aria-label="Viewer controls">
+      <button id="spinBtn" type="button" aria-pressed="true"><i></i><span id="spinLabel">PAUSE MOTION</span></button>
+      <a href="./assets/rose_cluster.glb" download>GLB <span>↗</span></a>
+    </nav>
+
+    <div class="gesture-gate" id="gestureGate" hidden>
+      <div class="gesture-gate__panel">
+        <div class="gesture-gate__top">
+          <span>ROSE / SIGNAL</span>
+          <span>HAND TRACKING · LOCAL</span>
+        </div>
+        <p class="eyebrow">A STUDY IN FLORAL DISPERSION</p>
+        <h2>Let them<br /><em>scatter.</em></h2>
+        <p class="gesture-gate__zh">张开手掌，让九朵酒红玫瑰散成微光粒子；握拳，让它们回到花茎，重新聚拢。</p>
+        <div class="gesture-gate__actions">
+          <button class="gesture-button gesture-button--primary" id="startBtn" type="button">开启摄像头</button>
+          <button class="gesture-button" id="autoBtn" type="button">自动演示</button>
+          <button class="gesture-button" id="pointerBtn" type="button">鼠标体验</button>
+        </div>
+        <p class="gesture-gate__message" id="gateMessage" role="status"></p>
+        <p class="gesture-gate__privacy"><i></i> 本地识别 · 不上传 · 不录制</p>
+      </div>
+      <div class="gesture-gate__aside" aria-hidden="true">
+        <span class="gesture-gate__line"></span>
+        <p>OPEN → DISSOLVE<br />FIST → REFORM</p>
+      </div>
+    </div>
+
+    <div class="gesture-hud" id="gestureHud" hidden>
+      <div class="gesture-readout">
+        <div class="gesture-readout__head">
+          <span id="modeLabel">CAMERA</span>
+          <span id="statusText">等待手掌</span>
+        </div>
+        <div class="gesture-readout__value"><strong id="dispersionValue">000</strong><sup>%</sup></div>
+        <div class="gesture-bar"><span id="meterFill"></span></div>
+        <div class="gesture-readout__foot">
+          <span>DISSOLVE</span>
+          <b id="gestureState">INTACT</b>
+        </div>
+        <p class="gesture-hint" id="gestureHint">张开手掌让花瓣散开，握拳让花束回来。</p>
+      </div>
+
+      <div class="hand-preview" id="handCamera" hidden>
+        <video id="webcam" playsinline muted autoplay></video>
+        <canvas id="handCanvas" width="320" height="240" aria-hidden="true"></canvas>
+        <span class="hand-preview__label">HAND / LOCAL</span>
+      </div>
+    </div>
+
+    <div class="loader" id="loader" role="status">
+      <span></span>
+      <p>LOADING ROSES</p>
+    </div>
+
+    <div class="error" id="error" hidden>
+      <h2>WebGL is unavailable.</h2>
+      <p>请使用支持 WebGL 的桌面浏览器打开，或启用硬件加速。</p>
+    </div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./assets/vendor/three.module.js",
+        "three/addons/": "./assets/vendor/addons/"
+      }
+    }
+  </script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
